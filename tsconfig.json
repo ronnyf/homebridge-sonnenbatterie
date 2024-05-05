@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2018", // ~node10
-    "module": "commonjs",
+    "target": "ES2022", // ~node20
+    "module": "node16",
     "lib": [
-      "es2015",
-      "es2016",
-      "es2017",
-      "es2018"
+      "ES2022"
     ],
     "declaration": true,
     "declarationMap": true,
@@ -15,7 +12,11 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    //from: https://www.npmjs.com/package/@tsconfig/node20
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16"
   },
   "include": [
     "src/"
@@ -24,3 +25,4 @@
     "**/*.spec.ts"
   ]
 }
+

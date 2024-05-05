@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "SonnenHomebridgePlugin",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -9,7 +9,25 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "SonnenBatterie"
+      },
+      "serial": {
+        "title": "Serial#",
+        "type": "string",
+        "required": true,
+        "default": "SB65596"
+      },
+      "sonnenURL": {
+        "title": "URL",
+        "type": "string",
+        "description": "Hostname/URL of the SonnenBatterie",
+        "placeholder": "192.168.68.51"
+      },
+      "sonnenToken": {
+        "title": "api-token",
+        "type": "string",
+        "description": "API token for SonnenBatterie API V2",
+        "placeholder": "8a0cb493-351b-447e-889c-03b328596d53"
       }
     }
   }
