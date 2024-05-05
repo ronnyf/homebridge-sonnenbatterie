@@ -1,20 +1,20 @@
 {
-  "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
-  "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "private": false,
+  "displayName": "Homebridge SonnenBatterie V2",
+  "name": "homebridge-sonnenbatterie-v2",
+  "version": "0.0.1",
+  "description": "A Homebridge plugin for a SonnenBatterie with v2 firmware.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git@github.com:ronnyf/homebridge-sonnenbatterie.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/ronnyf/homebridge-sonnenbatterie/issues"
   },
   "engines": {
-    "node": ">=14.18.1",
-    "homebridge": ">=1.3.5"
+    "node": "^18.17.0 || ^20.10.0",
+    "homebridge": "^1.7.0"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -24,18 +24,26 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "mqtt",
+    "sonnen",
+    "batterie",
+    "battery"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "mqtt": "^4.3.7"
+  },
   "devDependencies": {
-    "@types/node": "^16.10.9",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
-    "homebridge": "^1.3.5",
-    "nodemon": "^2.0.13",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "axios": "^1.6.5",
+    "eslint": "^8.45.0",
+    "homebridge": "^1.6.0",
+    "nodemon": "^2.0.22",
+    "prettier": "3.2.5",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
   }
 }
