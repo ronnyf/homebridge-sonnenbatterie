@@ -49,7 +49,7 @@ connect(clientID: string | null) {
   }
 
   getClientID(): string { 
-    return this.config["mqttClientID"] ?? "Sonnen-MQTT"
+    return this.config["clientID"] ?? "Sonnen-MQTT"
   }
 
   getUser(): string | null { 

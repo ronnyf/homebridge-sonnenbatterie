@@ -14,7 +14,8 @@
       "serial": {
         "title": "Serial#",
         "type": "string",
-        "required": true
+        "required": true,
+        "default": "SB65596"
       },
       "sonnenURL": {
         "title": "URL",
@@ -27,32 +28,6 @@
         "type": "string",
         "description": "API token for SonnenBatterie API V2",
         "placeholder": "8a0cb493-351b-447e-889c-03b328596d53"
-      },
-      "mqttClientID": {
-        "title": "Client ID",
-        "type": "string",
-        "description": "(Optional) The client ID that is being passed to the MQTT host.",
-        "required": false
-      },
-      "mqttHost": {
-        "title": "MQTT Host",
-        "type": "string",
-        "description": "The host url of the MQTT broker.",
-        "placeholder": "mqtt://localhost:1883",
-        "required": true
-      },
-      "mqttUser": {
-        "title": "MQTT User Name",
-        "type": "string",
-        "description": "Your mqtt user.",
-        "placeholder": "John Appleseed",
-        "required": false
-      },
-      "mqttPassword": {
-        "title": "Password",
-        "type": "string",
-        "description": "Your mqtt password.",
-        "required": false
       }
     }
   }
