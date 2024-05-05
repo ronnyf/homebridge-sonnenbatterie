@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "Homebridge SonnenBatterie V2",
   "name": "homebridge-sonnenbatterie-v2",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Homebridge plugin for a SonnenBatterie with v2 firmware.",
   "license": "Apache-2.0",
   "repository": {
