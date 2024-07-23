@@ -108,7 +108,7 @@ connect(clientID: string | null) {
       qos: 0,
       retain: false,
       properties: {
-        messageExpiryInterval: 10
+        messageExpiryInterval: 30
       }
     };
 

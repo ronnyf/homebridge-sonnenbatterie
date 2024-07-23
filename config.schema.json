@@ -28,6 +28,12 @@
         "description": "API token for SonnenBatterie API V2",
         "placeholder": "8a0cb493-351b-447e-889c-03b328596d53"
       },
+      "refreshInterval": {
+        "title": "Refresh Interval",
+        "type": "number",
+        "description": "Number of seconds between refreshes of the battery data.",
+        "default": 10
+      },
       "mqttClientID": {
         "title": "Client ID",
         "type": "string",

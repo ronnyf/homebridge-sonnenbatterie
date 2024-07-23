@@ -78,13 +78,15 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
     this.registerAccessory(factory, AccessoryType.Consumption);
     this.registerAccessory(factory, AccessoryType.Grid);
 
+    const interval: number = this.config['refreshInterval'] ?? 10
+
     setInterval(() => {
       try {
         this.fetchSonnenStatus();
       } catch (error) {
         this.log.error(`Error fetching latestData from SonnenAPI: ${error}`);
       }
-    }, 10000);
+    }, interval * 100);
   }
 
   async registerAccessory(
