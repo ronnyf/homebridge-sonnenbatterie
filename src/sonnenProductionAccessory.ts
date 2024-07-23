@@ -89,7 +89,7 @@ export class SonnenBatterieProductionAccessory<P extends PlatformAccessory>
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAccessory(
     batteryStatus: BatteryStatus,
-    inverterStatus: InverterStatus,
+    _inverterStatus: InverterStatus,
   ) {
     const hasProduction = batteryStatus.Production_W > 0;
     const level = batteryStatus.USOC;
