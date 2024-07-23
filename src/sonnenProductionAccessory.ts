@@ -92,8 +92,6 @@ export class SonnenBatterieProductionAccessory<P extends PlatformAccessory>
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
 
-    this.platform.log.info("production: ${batteryStatus.Production_W}");
-
     this.platform.sonnenMQTT.update(batteryStatus.Production_W, "Production");
     this.platform.sonnenMQTT.update(batteryStatus.USOC, "USOC");
     this.platform.sonnenMQTT.update(batteryStatus.RSOC, "RSOC");

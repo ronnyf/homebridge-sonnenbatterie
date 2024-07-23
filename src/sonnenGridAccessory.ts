@@ -93,10 +93,6 @@ export class SonnenBatterieGridAccessory<P extends PlatformAccessory>
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
 
-    this.platform.log.info(
-      "grid feed-in: $(batteryStatus.GridFeedIn_W), discharging: ${batteryStatus.BatteryDischarging}",
-    );
-
     // feature: only publish grid feed-in when we aren't discharing the battery; this should prevent
     // us from vehicle charging when the battery is discharging for whatever reason.
     const gridFeedInValue = batteryStatus.BatteryDischarging
