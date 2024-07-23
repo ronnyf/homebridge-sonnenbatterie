@@ -91,10 +91,7 @@ export class SonnenBatterieConsumptionAccessory<P extends PlatformAccessory>
   // Updatable Accessory
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  updateAccessory(
-    batteryStatus: BatteryStatus,
-    _inverterStatus: InverterStatus,
-  ) {
+  updateAccessory(batteryStatus: BatteryStatus, _: InverterStatus) {
     const hasConsumption = batteryStatus.Consumption_W > 0;
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
@@ -125,4 +122,3 @@ export class SonnenBatterieConsumptionAccessory<P extends PlatformAccessory>
     );
   }
 }
-
