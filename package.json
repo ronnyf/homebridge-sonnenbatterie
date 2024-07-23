@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git@github.com:ronnyf/homebridge-sonnenbatterie.git"
+    "url": "git+ssh://git@github.com/ronnyf/homebridge-sonnenbatterie.git"
   },
   "bugs": {
     "url": "https://github.com/ronnyf/homebridge-sonnenbatterie/issues"

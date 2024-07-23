@@ -1,8 +1,20 @@
 // eslint-disable-next-line max-len
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
-import { SonnenAPI } from './sonnenApi';
-import { AccessoryType, SonnenAccessoryFactory, UpdatableAccessory } from './sonnenAccessory';
-import { SonnenMQTT } from './sonnenMQTT';
+import {
+  API,
+  DynamicPlatformPlugin,
+  Logger,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
+  Characteristic,
+} from "homebridge";
+import { SonnenAPI } from "./sonnenApi";
+import {
+  AccessoryType,
+  SonnenAccessoryFactory,
+  UpdatableAccessory,
+} from "./sonnenAccessory";
+import { SonnenMQTT } from "./sonnenMQTT";
 
 /**
  * HomebridgePlatform
@@ -10,7 +22,6 @@ import { SonnenMQTT } from './sonnenMQTT';
  * parse the user config and discover/register accessories with Homebridge.
  */
 export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
-
   public readonly Service: typeof Service;
   public readonly Characteristic: typeof Characteristic;
 
@@ -23,11 +34,11 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
   constructor(
     public readonly log: Logger,
     public readonly config: PlatformConfig,
-    public readonly api: API
+    public readonly api: API,
   ) {
     this.Service = api.hap.Service;
     this.Characteristic = api.hap.Characteristic;
-    this.log.debug('Finished initializing platform:', config.name);
+    this.log.debug("Finished initializing platform:", config.name);
     this.sonnenAPI = new SonnenAPI(2, 1, config, log);
     this.sonnenMQTT = new SonnenMQTT(config, log);
 
@@ -35,8 +46,8 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
     // Dynamic Platform plugins should only register new accessories after this event was fired,
     // in order to ensure they weren't added to homebridge already. This event can also be used
     // to start discovery of new accessories.
-    this.api.on('didFinishLaunching', () => {
-      log.debug('discovering devices');
+    this.api.on("didFinishLaunching", () => {
+      log.debug("discovering devices");
       // run the method to discover / register your devices as accessories
       this.discoverDevices();
     });
@@ -47,7 +58,7 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   configureAccessory(accessory: PlatformAccessory) {
-    this.log.info('Loading accessory from cache:', accessory.displayName);
+    this.log.info("Loading accessory from cache:", accessory.displayName);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
     this.accessories.push(accessory);
@@ -60,7 +71,7 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
    */
 
   async discoverDevices() {
-    this.log.info('discovering SonnenBatterie');
+    this.log.info("discovering SonnenBatterie");
 
     const config = await this.sonnenAPI.fetchConfiguration();
     this.log.debug(`config: ${JSON.stringify(config)}`);
@@ -71,14 +82,19 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
     await this.sonnenAPI.reloadBatteryStatus();
     this.log.debug(`status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
 
-    const factory = new SonnenAccessoryFactory(this, this.api, this.sonnenMQTT, this.log);
+    const factory = new SonnenAccessoryFactory(
+      this,
+      this.api,
+      this.sonnenMQTT,
+      this.log,
+    );
 
     // TODO: enumerate something to make this less hard-coded
     this.registerAccessory(factory, AccessoryType.Production);
     this.registerAccessory(factory, AccessoryType.Consumption);
     this.registerAccessory(factory, AccessoryType.Grid);
 
-    const interval: number = this.config['refreshInterval'] ?? 10
+    const interval: number = this.config["refreshInterval"] ?? 10;
 
     setInterval(() => {
       try {
@@ -112,23 +128,26 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
 
   updateAccessories() {
     this.updatableAccessories.forEach((updatable) => {
-      updatable.updateAccessory(this.sonnenAPI.batteryStatus, this.sonnenAPI.inverterStatus);
+      updatable.updateAccessory(
+        this.sonnenAPI.batteryStatus,
+        this.sonnenAPI.inverterStatus,
+      );
     });
   }
 
   async fetchSonnenStatus() {
     await this.sonnenAPI.reloadBatteryStatus();
-    this.log.info(`did fetch battery status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
+    // this.log.info(`did fetch battery status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
 
     await this.sonnenAPI.reloadInverterStatus();
-    this.log.info(`did fetch inverter status: ${JSON.stringify(this.sonnenAPI.inverterStatus)}`);
+    // this.log.info(`did fetch inverter status: ${JSON.stringify(this.sonnenAPI.inverterStatus)}`);
 
     // updating post fetch
     this.updateAccessories();
   }
 
   async getStatusValue<T>(value: T): Promise<T> {
-    this.log.debug('returning status value ->', value);
+    this.log.debug("returning status value ->", value);
     return value;
   }
 
