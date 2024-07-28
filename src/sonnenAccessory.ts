@@ -3,7 +3,6 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SonnenHomebridgePlatform } from './platform';
 import { SonnenBatterieProductionAccessory } from './sonnenProductionAccessory';
 import { BatteryStatus, InverterStatus } from './sonnenApi';
-import { SonnenMQTT } from './sonnenMQTT';
 import { SonnenBatterieConsumptionAccessory } from './sonnenConsumptionAccessory';
 import { SonnenBatterieGridAccessory } from './sonnenGridAccessory';
 
@@ -21,14 +20,12 @@ export class SonnenAccessoryFactory {
 
   private platform: SonnenHomebridgePlatform;
   private api: API;
-  private mqtt: SonnenMQTT;
   private log: Logger;
 
-  constructor(platform: SonnenHomebridgePlatform, api: API, mqtt: SonnenMQTT, log: Logger) {
+  constructor(platform: SonnenHomebridgePlatform) {
     this.platform = platform;
-    this.api = api;
-    this.mqtt = mqtt
-    this.log = log;
+    this.api = platform.api;
+    this.log = platform.log;
   }
 
   makePlugin(displayName: string, uuid: string): UpdatableAccessory | null {

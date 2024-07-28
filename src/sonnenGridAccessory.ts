@@ -89,6 +89,7 @@ export class SonnenBatterieGridAccessory<P extends PlatformAccessory>
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAccessory(batteryStatus: BatteryStatus, _: InverterStatus) {
+    this.platform.log.debug("updating Grid accessory: ", batteryStatus.GridFeedIn_W);
     const isFeedingIntoGrid = batteryStatus.GridFeedIn_W > 0;
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
@@ -99,9 +100,9 @@ export class SonnenBatterieGridAccessory<P extends PlatformAccessory>
       ? 0
       : batteryStatus.GridFeedIn_W * -1;
 
-    this.platform.sonnenMQTT.update(gridFeedInValue, "Grid");
-    this.platform.sonnenMQTT.update(batteryStatus.USOC, "USOC");
-    this.platform.sonnenMQTT.update(batteryStatus.RSOC, "RSOC");
+    this.platform.sonnenMqtt.publish("Grid", gridFeedInValue, this.platform.log);
+    this.platform.sonnenMqtt.publish("USOC", batteryStatus.USOC, this.platform.log);
+    this.platform.sonnenMqtt.publish("RSOC", batteryStatus.RSOC, this.platform.log);
 
     this.service.updateCharacteristic(
       this.platform.Characteristic.On,
