@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-len
 import {
   API,
   DynamicPlatformPlugin,
@@ -14,7 +13,7 @@ import {
   SonnenAccessoryFactory,
   UpdatableAccessory,
 } from "./sonnenAccessory";
-import { SonnenMQTT } from "./sonnenMQTT";
+import { SonnenMQTT } from "./garageclient";
 
 /**
  * HomebridgePlatform
@@ -28,7 +27,7 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
   public readonly sonnenAPI: SonnenAPI;
-  public readonly sonnenMQTT: SonnenMQTT;
+  public readonly sonnenMqtt: SonnenMQTT;
   private updatableAccessories: UpdatableAccessory[] = [];
 
   constructor(
@@ -38,9 +37,12 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
   ) {
     this.Service = api.hap.Service;
     this.Characteristic = api.hap.Characteristic;
+
     this.log.debug("Finished initializing platform:", config.name);
+
     this.sonnenAPI = new SonnenAPI(2, 1, config, log);
-    this.sonnenMQTT = new SonnenMQTT(config, log);
+    const mqttRootTopic = this.config['mqttRootTopic'] ?? 'Sonnen';
+    this.sonnenMqtt = new SonnenMQTT(null, mqttRootTopic);
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -50,6 +52,9 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
       log.debug("discovering devices");
       // run the method to discover / register your devices as accessories
       this.discoverDevices();
+      this.mqttConnect();
+      this.registerAccessories()
+      this.runloop();
     });
   }
 
@@ -70,7 +75,7 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
 
-  async discoverDevices() {
+  async discoverDevices(): Promise<void> {
     this.log.info("discovering SonnenBatterie");
 
     const config = await this.sonnenAPI.fetchConfiguration();
@@ -80,29 +85,46 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
     this.log.info(`SW: ${config.DE_Software}`);
 
     await this.sonnenAPI.reloadBatteryStatus();
-    this.log.debug(`status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
+    this.log.debug(`1st status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
+  }
 
-    const factory = new SonnenAccessoryFactory(
-      this,
-      this.api,
-      this.sonnenMQTT,
-      this.log,
-    );
+  async mqttConnect(): Promise<void> {
+    this.log.info("connecting to mqtt broker");
 
-    // TODO: enumerate something to make this less hard-coded
-    this.registerAccessory(factory, AccessoryType.Production);
-    this.registerAccessory(factory, AccessoryType.Consumption);
-    this.registerAccessory(factory, AccessoryType.Grid);
+    const clientID = this.config['mqttClientID'] ?? 'SonnenMQTT';
+    const username = this.config['mqttUser'];
+    const password = this.config['mqttPassword'];
 
+    if (username == null) {
+      this.log.warn("username is null")
+    }
+    if (password == null) { 
+      this.log.warn("password is null")
+    }
+
+    const host = this.config['mqttHost'] ?? 'mqtt://localhost:1883';
+
+    await this.sonnenMqtt.connectAsync(clientID, username, password, host);
+    this.log.debug("did connect to mqtt broker");
+  }
+
+  runloop() {
     const interval: number = this.config["refreshInterval"] ?? 10;
-
     setInterval(() => {
       try {
         this.fetchSonnenStatus();
       } catch (error) {
         this.log.error(`Error fetching latestData from SonnenAPI: ${error}`);
       }
-    }, interval * 100);
+    }, interval * 1000);
+  }
+
+  registerAccessories() {
+    const factory = new SonnenAccessoryFactory(this);
+
+    this.registerAccessory(factory, AccessoryType.Production);
+    this.registerAccessory(factory, AccessoryType.Consumption);
+    this.registerAccessory(factory, AccessoryType.Grid);
   }
 
   async registerAccessory(
@@ -137,44 +159,12 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
 
   async fetchSonnenStatus() {
     await this.sonnenAPI.reloadBatteryStatus();
-    // this.log.info(`did fetch battery status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
+    // this.log.debug(`did fetch battery status: ${JSON.stringify(this.sonnenAPI.batteryStatus)}`);
 
     await this.sonnenAPI.reloadInverterStatus();
-    // this.log.info(`did fetch inverter status: ${JSON.stringify(this.sonnenAPI.inverterStatus)}`);
+    // this.log.debug(`did fetch inverter status: ${JSON.stringify(this.sonnenAPI.inverterStatus)}`);
 
     // updating post fetch
     this.updateAccessories();
   }
-
-  async getStatusValue<T>(value: T): Promise<T> {
-    this.log.debug("returning status value ->", value);
-    return value;
-  }
-
-  // battery status bindables
-  // async getBatteryLevel(): Promise<CharacteristicValue> {
-  //   const battery = this.batteryStatus.Level;
-  //   this.log.debug('Get Characteristic BatteryLevel ->', battery);
-  //   return battery;
-  // }
-
-  // async getBatteryLowChargeState(): Promise<CharacteristicValue> {
-  //   const lowBatteryStatus = this.batteryStatus.Level > this.batteryStatus.Backup
-  //     ? this.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
-  //     : this.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
-  //   this.log.debug('Get Characteristic LowBattery ->', lowBatteryStatus);
-  //   return lowBatteryStatus;
-  // }
-
-  // async getProduction(): Promise<CharacteristicValue> {
-  //   const production = this.batteryStatus.Production;
-  //   this.log.debug('Get Characteristic Production ->', production);
-  //   return production;
-  // }
-
-  // async getProductionOn(): Promise<CharacteristicValue> {
-  //   const productionOn = this.batteryStatus.Production > 0 ?? false;
-  //   this.log.debug('Get Characteristic ProductionOn ->', productionOn);
-  //   return productionOn;
-  // }
 }

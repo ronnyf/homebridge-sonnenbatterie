@@ -88,13 +88,18 @@ export class SonnenBatterieProductionAccessory<P extends PlatformAccessory>
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAccessory(batteryStatus: BatteryStatus, _: InverterStatus) {
+    this.platform.log.debug("updating Production accessory: ", batteryStatus.Production_W);
     const hasProduction = batteryStatus.Production_W > 0;
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
 
-    this.platform.sonnenMQTT.update(batteryStatus.Production_W, "Production");
-    this.platform.sonnenMQTT.update(batteryStatus.USOC, "USOC");
-    this.platform.sonnenMQTT.update(batteryStatus.RSOC, "RSOC");
+    if (this.platform.sonnenMqtt == null) {
+      this.platform.log.error("sonnenMqtt is NULL");
+    }
+
+    this.platform.sonnenMqtt.publish("Production", batteryStatus.Production_W, this.platform.log);
+    this.platform.sonnenMqtt.publish("USOC", batteryStatus.USOC, this.platform.log);
+    this.platform.sonnenMqtt.publish("RSOC", batteryStatus.RSOC, this.platform.log);
 
     this.service.updateCharacteristic(
       this.platform.Characteristic.On,

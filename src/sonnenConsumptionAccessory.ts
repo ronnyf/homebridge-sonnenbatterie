@@ -92,15 +92,15 @@ export class SonnenBatterieConsumptionAccessory<P extends PlatformAccessory>
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateAccessory(batteryStatus: BatteryStatus, _: InverterStatus) {
+    this.platform.log.debug("updating Consumption accessory: ", batteryStatus.Consumption_W);
     const hasConsumption = batteryStatus.Consumption_W > 0;
     const level = batteryStatus.USOC;
     const lowBattery = level < batteryStatus.BackupBuffer;
 
-    this.platform.sonnenMQTT.update(batteryStatus.Consumption_W, "Consumption");
-    this.platform.sonnenMQTT.update(batteryStatus.USOC, "USOC");
-
+    this.platform.sonnenMqtt.publish("Consumption", batteryStatus.Consumption_W, this.platform.log);
+    this.platform.sonnenMqtt.publish("USOC", batteryStatus.USOC, this.platform.log);
     //Grid (+I/-E) MQTT topic to modulate charge rate based on excess power
-    this.platform.sonnenMQTT.update(batteryStatus.GridFeedIn_W * -1, "Grid");
+    this.platform.sonnenMqtt.publish("Grid", batteryStatus.GridFeedIn_W * -1, this.platform.log);
 
     this.service.updateCharacteristic(
       this.platform.Characteristic.On,
