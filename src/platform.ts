@@ -109,7 +109,7 @@ export class SonnenHomebridgePlatform implements DynamicPlatformPlugin {
   }
 
   runloop() {
-    const interval: number = this.config["refreshInterval"] ?? 10;
+    const interval: number = this.config["refreshInterval"] ?? 30;
     setInterval(() => {
       try {
         this.fetchSonnenStatus();
